@@ -1,0 +1,82 @@
+services:
+  django_api:
+    build:
+      context: ./Backend
+      dockerfile: ../Dockerfile/python.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Backend:/usr/src/app
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=geo_platform
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+
+  nextjs:
+    build:
+      context: ./Frontend
+      dockerfile: ../Dockerfile/nextjs.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Frontend:/app:Z
+    command: npm run dev
+    depends_on:
+      - django_api
+
+  db:
+    build:
+      context: ./Dockerfile
+      dockerfile: postgres.Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=geo_platform
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  python:
+    build:
+      context: ./Backend
+      dockerfile: ../Dockerfile/python.Dockerfile
+    volumes:
+      - ./Backend:/usr/src/app
+    tty: true
+    command: sh
+
+  django:
+    build:
+      context: ./Backend
+      dockerfile: ../Dockerfile/python.Dockerfile
+    volumes:
+      - ./Backend:/usr/src/app
+    tty: true
+    command: sh
+
+  nginx:
+    build:
+      context: ./Dockerfile
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - django_api
+      - nextjs
+
+volumes:
+  pgdata:
