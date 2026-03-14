@@ -82,3 +82,29 @@ cover/
 # Docker
 docker-compose.override.yml
 .docker-sync/
+
+
+# Backend
+Backend/__pycache__/
+Backend/**/*.pyc
+Backend/staticfiles/
+Backend/static/
+Backend/media/
+Backend/.env
+Backend/db.sqlite3
+Backend/celerybeat-schedule
+Backend/celerybeat.pid
+
+# Frontend
+Frontend/node_modules/
+Frontend/.next/
+Frontend/out/
+Frontend/build/
+Frontend/.env*
+Frontend/.vercel
+Frontend/*.tsbuildinfo
+Frontend/next-env.d.ts
+Frontend/npm-debug.log*
+Frontend/yarn-debug.log*
+Frontend/yarn-error.log*
+Frontend/.pnpm-debug.log*
